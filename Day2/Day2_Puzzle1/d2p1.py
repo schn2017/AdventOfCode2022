@@ -27,9 +27,9 @@ for line in inputFile:
         round = re.sub(r'\W+', '', line)
 
         yourMove = round[1] 
-        result = rulesDict.get(round)
-
         roundScore =  moveValues.get(yourMove)
+
+        result = rulesDict.get(round)
 
         if result == "W":
             roundScore += 6
