@@ -1,4 +1,6 @@
-inputFile = open("input.txt")
+import sys
+
+inputFile = open(sys.argv[1], "r")
 
 maxCalories = 0
 currentElfCalories = 0

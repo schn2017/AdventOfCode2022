@@ -1,5 +1,5 @@
 import re
-
+import sys 
 moveValues = {
     "A": 1,
     "B": 2,
@@ -20,7 +20,7 @@ rulesDict = {
     "CZ": "A"
 }
 
-inputFile = open("input.txt", "r")
+inputFile = open(sys.argv[1], "r")
 finalScore = 0 
 
 for line in inputFile:

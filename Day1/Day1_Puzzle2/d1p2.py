@@ -1,5 +1,7 @@
+import sys
+
 def main():
-    inputFile = open("input.txt", "r")
+    inputFile = open(sys.argv[1], "r")
 
     maxCaloriesArr = [0, 0, 0]
     currentElfCalories = 0
