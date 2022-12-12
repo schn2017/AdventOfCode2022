@@ -68,12 +68,21 @@ class Solution:
         for instruction in self.instructions:
             destIndex = instruction.destination - 1
             sourceIndex = instruction.source - 1
+
+            crateHolder = []
+
             for move in range(instruction.moves):
                 # Get top crate from source and remove crate from source stack
                 crate = self.stacks[sourceIndex].pop(0)
-                # Add crate to top of destination stack
+                crateHolder.append(crate)
+            
+            #Reverse crates to maintain order when placing in new stack
+            crateHolder.reverse()
+
+            # Add crates to top of destination stack
+            for crate in crateHolder:
                 self.stacks[destIndex].insert(0, crate)
-             
+
     def topOfAllStacks(self):
         ret = ""
 
