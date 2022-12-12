@@ -19,6 +19,7 @@ def main():
         elif pair1Lower >= pair2Lower and pair1Upper <= pair2Upper:
             fullyContainedPairs += 1
     
+    inputFile.close() 
     print("There are " + str(fullyContainedPairs) + " fully contained pairs.")
 
 if __name__ == "__main__":
