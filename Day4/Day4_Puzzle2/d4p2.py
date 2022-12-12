@@ -10,8 +10,6 @@ def main():
 
         if doPairsOverLap(pair1, pair2):
             overlappingPairs += 1
-        elif doPairsOverLap(pair2, pair1):
-            overlappingPairs += 1
 
     inputFile.close()
     print("There are " + str(overlappingPairs) + " overlapping contained pairs.")
@@ -23,8 +21,12 @@ def doPairsOverLap(pair1, pair2):
     pair2Lower = int(pair2[0])
     pair2Upper = int(pair2[1])
 
-    return (pair1Lower <= pair2Lower and pair2Lower <= pair1Upper) or (pair1Lower <= pair2Upper and pair2Upper <= pair1Upper)
-
+    return (
+        (pair1Lower <= pair2Lower and pair2Lower <= pair1Upper) 
+        or (pair1Lower <= pair2Upper and pair2Upper <= pair1Upper)
+        or (pair2Lower <= pair1Lower and pair1Lower <= pair2Upper) 
+        or (pair2Lower <= pair1Upper and pair1Upper <= pair2Upper)
+    )
 
 if __name__ == "__main__":
     main()
