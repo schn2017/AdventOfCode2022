@@ -39,6 +39,7 @@ class Directory:
             sum += childDirectorySize
 
         return sum
+
 class FileSystem: 
     def __init__(self):
         self.headDirectory: Directory = Directory()
