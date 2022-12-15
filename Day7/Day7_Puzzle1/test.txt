@@ -9,10 +9,12 @@ $ ls
 dir e
 29116 f
 2557 g
+$ ls
 62596 h.lst
 $ cd e
 $ ls
 584 i
+$ ls
 $ cd ..
 $ cd ..
 $ cd d
@@ -21,3 +23,6 @@ $ ls
 8033020 d.log
 5626152 d.ext
 7214296 k
+$ ls
+$ cd /
+$ ls
