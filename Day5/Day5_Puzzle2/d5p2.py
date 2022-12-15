@@ -1,5 +1,4 @@
 import sys
-from enum import Enum
 
 class Instruction:
     def __init__(self, moves, source, destination):
