@@ -6,115 +6,135 @@ class Tree:
         self.rowPos = rowPos
         self.colPos = colPos
         self.isEdge = False
+        self.isVisible = False
 
-    def checkIfEdge(self, row, column, width, height):
-        return row == 0 or row == width - 1 or column == 0 or column == height - 1
+    def checkIfEdge(self, width, height):
+        self.isEdge = self.rowPos == 0 or self.rowPos == width - 1 or self.colPos == 0 or self.colPos == height - 1
+        self.isVisible = self.isEdge
+
+class Solution:
+    def __init__(self):
+        self.visibleTrees = 0
+        self.width = 0
+        self.height = 0
+        self.trees = []
+        self.path = []
+
+    def printPath(self):
+        path = ""
+        read = []
+
+        for tree in self.path:
+            path += str(tree.rowPos) + "," +str(tree.colPos) + " height " + str(tree.height) + " "
+
+            if tree.isEdge:
+                path+= "EDGE "
+                break
+
+            if tree != self.path[len(self.path) - 1]:
+                path += "--> "
+            else:
+                path += " DONE"
+            read.append(tree)
+        print(path)
+
+
+    def solve(self):
+        self.parseInputFile()
         
-def solve():
-    inputFile = open(sys.argv[1], "r")
-    
-    trees = []
-    rowCount = 0
-    for line in inputFile:
-        sanitizedLine = line.replace("\n", "")
-        row = []
-        colCount = 0
-        for char in sanitizedLine:
-            newTree = True(int(char), rowCount, colCount)
-            row.append(newTree)
-            colCount += 1
-        trees.append(row)
-        rowCount += 1
+        # find edges
+        for rowOfTrees in self.trees:
+            for tree in rowOfTrees:
+                tree.checkIfEdge(self.width, self.height)
+                if tree.isEdge:
+                   self.visibleTrees += 1
 
-    visibleTreeCount(trees)
+        # Find visible non edge trees
+        for rowOfTrees in self.trees:
+            for tree in rowOfTrees:
+                if tree.isEdge == True:
+                    continue
 
-    inputFile.close() 
+                if self.isTreeVisible(tree):
+                    self.visibleTrees += 1
+                    self.printPath()
+                self.path = []
+
+        # Print visible edge rocks count
+        print(str(self.visibleTrees) + " visible edge trees")
+
+    def isTreeVisible(self, tree):
+        self.path.append(tree)
+
+        if tree.isEdge:
+            return True
+
+        #check if tree is visible
+        #print("Checking non edge tree of height " + str(tree.height) + " at " + str(tree.rowPos) + "," +str(tree.colPos))
+        row = tree.rowPos
+        col = tree.colPos
+
+        if tree.height > self.trees[row][col - 1].height:
+            # check if other tree is visible
+            tree.isVisible = self.isTreeVisible(self.trees[row][col - 1])
+            
+            if tree.isVisible:
+                return True
+
+        if tree.height > self.trees[row][col + 1].height:
+            tree.isVisible = self.isTreeVisible(self.trees[row][col + 1])
+            if tree.isVisible:
+                return True
+
+        if tree.height > self.trees[row + 1][col].height:
+            tree.isVisible = self.isTreeVisible(self.trees[row + 1][col])
+            if tree.isVisible:
+                return True
+
+        if tree.height > self.trees[row - 1][col].height:
+            tree.isVisible = self.isTreeVisible(self.trees[row - 1][col])
+            if tree.isVisible:
+                return True
+
+        if len(self.path) > 0:        
+            self.path.pop()
+        return False
+
+    def parseInputFile(self):    
+        inputFile = open(sys.argv[1], "r")
+
+        rowCount = 0
+
+        for line in inputFile:
+            row = []
+            colCount = 0
+            sanitizedLine = line.replace("\n", "")
+            for char in sanitizedLine:
+                newTree = Tree(int(char), rowCount, colCount)
+                row.append(newTree)
+                colCount += 1
+            self.trees.append(row)
+            rowCount += 1
+
+        inputFile.close()
+
+        self.width = len(self.trees[0])
+        self.height = len(self.trees)
+
+    def printInfo(self):
+        width = len(self.trees[0])
+        height = len(self.trees)
+
+        # Subtract two from height multiplication to take into account first and last rows
+        perimeterTreesCnt = 2 * width + 2 * (height - 2)
+        print("Height is " + str(height))
+        print("Width is " + str(width))
+        print("The area is " + str(height * width))
+        print("There are " + str(perimeterTreesCnt) + " visible trees around the perimeter")
 
 def main():
-    inputFile = open(sys.argv[1], "r")
-    
-    trees = []
-    rowCount = 0
-    for line in inputFile:
-        sanitizedLine = line.replace("\n", "")
-        row = []
-        for char in sanitizedLine:
-            row.append(int(char))
-        trees.append(row)
-        rowCount += 1
-
-    visibleTreeCount(trees)
-
-    inputFile.close()
-
-def visibleTreeCount(trees):
-    width = len(trees[0])
-    height = len(trees)
-
-    # Subtract two from height multiplication to take into account first and last rows
-    perimeterTreesCnt = 2 * width + 2 * (height - 2)
-
-    print("There are " + str(perimeterTreesCnt) + " visible trees around the perimeter")
-    totalVisibleTrees = perimeterTreesCnt
-    for row in range(1, len(trees) - 1):
-        rowStr = ""
-        for column in range(1, width - 1):
-            rowStr += str(trees[row][column])
-            #print('Checking ' + str(trees[row][column]) + " at position " + str(row) + "," + str(column))
-
-            if checkDirections(trees, row, column, 0):
-                totalVisibleTrees += 1
-    
-    print("Height is " + str(height))
-    print("Width is " + str(width))
-    print("The area is " + str(height * width))
-    print("There are " + str(perimeterTreesCnt) + " visible trees around the perimeter")
-    print("There are " + str(totalVisibleTrees) + " trees visible")
-
-def checkDirections(trees, row, column, level):
-    print("Level "  + str (level))
-
-     #North
-    if trees[row][column] > trees[row - 1][column]:
-        if isTreeVisible(trees, row, column, row - 1, column, level + 1):
-            return True
-        else:
-            if checkDirections(trees, row - 1, column, level + 1):
-                return True
-    # South
-    if trees[row][column] > trees[row + 1][column]:
-        if isTreeVisible(trees, row, column, row + 1, column, level + 1):
-            return True
-        else:
-            if checkDirections(trees, row + 1, column, level + 1):
-                return True
-    # East
-    if trees[row][column] > trees[row][column + 1]:
-        if isTreeVisible(trees, row, column, row, column + 1, level + 1):
-            return True
-        else:
-            if checkDirections(trees, row, column + 1, level + 1):
-                return True
-    # West
-    if trees[row][column] > trees[row][column - 1]:
-        if isTreeVisible(trees, row, column, row, column - 1, level + 1):
-            return True
-        else:
-            if checkDirections(trees, row, column - 1, level + 1):
-                return True
-    return False
-
-
-def isTreeVisible(trees, row, column, dirRow, dirCol, level):
-    #print("Level "  + str (level))
-
-    if trees[row][column] > trees[dirRow][dirCol]:
-        if isEdge(len(trees[0]), len(trees), dirRow, dirCol):
-            return True
-    return False
-
-def isEdge(width, height, row, column):
-    return row == 0 or row == width - 1 or column == 0 or column == height - 1
+    solution = Solution()
+    solution.solve()
 
 if __name__ == "__main__":
     main()
