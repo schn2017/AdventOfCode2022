@@ -83,7 +83,12 @@ class Solution:
         inputFile.close()
 
     def checkDirections(self, tree):
-        return self.isVisible(tree, "N", True) or self.isVisible(tree, "S", True) or self.isVisible(tree, "E", True) or self.isVisible(tree, "W", True)
+        return (
+            self.isVisible(tree, "N", True) 
+            or self.isVisible(tree, "S", True) 
+            or self.isVisible(tree, "E", True) 
+            or self.isVisible(tree, "W", True)
+        )
 
     def isVisible(self, tree, direction, isFirstTree):
         if isFirstTree:
