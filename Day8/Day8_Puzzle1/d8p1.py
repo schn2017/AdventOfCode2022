@@ -6,20 +6,24 @@ class Tree:
         self.rowPos = rowPos
         self.colPos = colPos
         self.isEdge = False
-        self.isVisible = False
 
     def checkIfEdge(self, width, height):
         self.isEdge = self.rowPos == 0 or self.rowPos == width - 1 or self.colPos == 0 or self.colPos == height - 1
-        self.isVisible = self.isEdge
 
 class Solution:
     def __init__(self):
         self.visibleTrees = 0
-        self.width = 0
-        self.height = 0
         self.trees = []
         self.path = []
+        self.currentTreeHeight = 0
+        self.directionRules = {
+            "N": [-1, 0],
+            "S": [1, 0],
+            "E": [0, 1],
+            "W": [0, -1]
+        }
 
+    # Method used for debugging to visualize path being taken
     def printPath(self):
         path = ""
         read = []
@@ -29,108 +33,72 @@ class Solution:
 
             if tree.isEdge:
                 path+= "EDGE "
-                break
 
             if tree != self.path[len(self.path) - 1]:
                 path += "--> "
-            else:
-                path += " DONE"
             read.append(tree)
         print(path)
 
-
     def solve(self):
         self.parseInputFile()
-        
-        # find edges
+        width = len(self.trees[0])
+        height = len(self.trees)
+        # Establish edges
         for rowOfTrees in self.trees:
             for tree in rowOfTrees:
-                tree.checkIfEdge(self.width, self.height)
-                if tree.isEdge:
-                   self.visibleTrees += 1
+                tree.checkIfEdge(width, height)
+
 
         # Find visible non edge trees
         for rowOfTrees in self.trees:
             for tree in rowOfTrees:
+                self.currentTreeHeight = tree.height
                 if tree.isEdge == True:
+                    self.visibleTrees += 1
                     continue
 
-                if self.isTreeVisible(tree):
+                if self.checkDirections(tree):
                     self.visibleTrees += 1
-                    self.printPath()
                 self.path = []
 
-        # Print visible edge rocks count
-        print(str(self.visibleTrees) + " visible edge trees")
-
-    def isTreeVisible(self, tree):
-        self.path.append(tree)
-
-        if tree.isEdge:
-            return True
-
-        #check if tree is visible
-        #print("Checking non edge tree of height " + str(tree.height) + " at " + str(tree.rowPos) + "," +str(tree.colPos))
-        row = tree.rowPos
-        col = tree.colPos
-
-        if tree.height > self.trees[row][col - 1].height:
-            # check if other tree is visible
-            tree.isVisible = self.isTreeVisible(self.trees[row][col - 1])
-            
-            if tree.isVisible:
-                return True
-
-        if tree.height > self.trees[row][col + 1].height:
-            tree.isVisible = self.isTreeVisible(self.trees[row][col + 1])
-            if tree.isVisible:
-                return True
-
-        if tree.height > self.trees[row + 1][col].height:
-            tree.isVisible = self.isTreeVisible(self.trees[row + 1][col])
-            if tree.isVisible:
-                return True
-
-        if tree.height > self.trees[row - 1][col].height:
-            tree.isVisible = self.isTreeVisible(self.trees[row - 1][col])
-            if tree.isVisible:
-                return True
-
-        if len(self.path) > 0:        
-            self.path.pop()
-        return False
+        print(str(self.visibleTrees) + " visible trees")
 
     def parseInputFile(self):    
         inputFile = open(sys.argv[1], "r")
 
         rowCount = 0
-
         for line in inputFile:
+            sanitizedLine = line.replace("\n", "")
+
             row = []
             colCount = 0
-            sanitizedLine = line.replace("\n", "")
             for char in sanitizedLine:
                 newTree = Tree(int(char), rowCount, colCount)
                 row.append(newTree)
                 colCount += 1
+
             self.trees.append(row)
             rowCount += 1
 
         inputFile.close()
 
-        self.width = len(self.trees[0])
-        self.height = len(self.trees)
+    def checkDirections(self, tree):
+        return self.isVisible(tree, "N", True) or self.isVisible(tree, "S", True) or self.isVisible(tree, "E", True) or self.isVisible(tree, "W", True)
 
-    def printInfo(self):
-        width = len(self.trees[0])
-        height = len(self.trees)
+    def isVisible(self, tree, direction, isFirstTree):
+        if isFirstTree:
+            self.path = []
 
-        # Subtract two from height multiplication to take into account first and last rows
-        perimeterTreesCnt = 2 * width + 2 * (height - 2)
-        print("Height is " + str(height))
-        print("Width is " + str(width))
-        print("The area is " + str(height * width))
-        print("There are " + str(perimeterTreesCnt) + " visible trees around the perimeter")
+        self.path.append(tree)
+        otherTree = self.trees[tree.rowPos + self.directionRules.get(direction)[0]][tree.colPos + self.directionRules.get(direction)[1]]
+
+        if self.currentTreeHeight > otherTree.height:
+            if otherTree.isEdge:
+                self.path.append(otherTree)
+                return True
+            else:
+                return self.isVisible(otherTree, direction, False)
+        return False
 
 def main():
     solution = Solution()
