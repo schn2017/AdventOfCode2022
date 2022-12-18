@@ -23,22 +23,6 @@ class Solution:
             "W": [0, -1]
         }
 
-    # Method used for debugging to visualize path being taken
-    def printPath(self):
-        path = ""
-        read = []
-
-        for tree in self.path:
-            path += str(tree.rowPos) + "," +str(tree.colPos) + " height " + str(tree.height) + " "
-
-            if tree.isEdge:
-                path+= "EDGE "
-
-            if tree != self.path[len(self.path) - 1]:
-                path += "--> "
-            read.append(tree)
-        print(path)
-
     def solve(self):
         self.parseInputFile()
         width = len(self.trees[0])
