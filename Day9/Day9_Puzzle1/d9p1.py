@@ -28,7 +28,7 @@ def main():
             xIncrease = directionRules.get(direction)[0]
             yIncrease = directionRules.get(direction)[1]
 
-            # original head position
+            # original tail position
             originalX = tail.x
             originalY = tail.y
 
@@ -41,16 +41,17 @@ def main():
             xDistance = abs(head.x - tail.x)
             sum = (yDistance * yDistance)+ (xDistance * xDistance)
             distanceFrom = math.sqrt(sum)
+
             # diagonally adjacent, no movement needed
             if distanceFrom == math.sqrt(2):
                 continue
 
             # Vertical movement
             if yDistance == 2 and xDistance == 0:
-                tail.y = tail.y + yIncrease
+                tail.y += 1 if head.y - tail.y > 0 else -1
             # Horizontal movement
             elif xDistance == 2 and yDistance == 0:
-                tail.x = tail.x + xIncrease
+                tail.x += 1 if head.x - tail.x > 0 else -1
             # Diagonal movement
             elif distanceFrom > math.sqrt(2):
                 tail.x += 1 if head.x - tail.x > 0 else -1
@@ -62,9 +63,6 @@ def main():
 
 
     uniqueVisits = set(tailVisited)
-
-    #print(uniqueVisits)
-
     print("The tail visited " + str(len(uniqueVisits)) + " unique spots")
     
     inputFile.close()
