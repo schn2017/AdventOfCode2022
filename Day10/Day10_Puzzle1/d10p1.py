@@ -17,7 +17,6 @@ class CPU:
         self.cycle = 1
         self.instructions = []
         self.signalStrengthChecks = [20, 60, 100, 140, 180, 220]
-        self.runningAdditions = []
         self.signalStrengthSum = 0
         pass
 
@@ -45,11 +44,12 @@ class CPU:
         # Add signal strength if at pre determined cycle
         if self.cycle in self.signalStrengthChecks:
             self.signalStrengthSum += self.cycle * self.registerValue
-            print("During the " + str(self.cycle) + "th cycle, register X has the value " + str(self.registerValue) + ", so the signal strength is " + str(self.cycle)  + " * " + str(self.registerValue) + " = " + str(self.cycle * self.registerValue))
+            print("During the " + str(self.cycle) + "th cycle, register X has the value " 
+                + str(self.registerValue) + ", so the signal strength is " + str(self.cycle)  
+                + " * " + str(self.registerValue) + " = " + str(self.cycle * self.registerValue))
         
         # Handle instruction
         if len(self.instructions) > 0 and self.instructions[0].completionCycle == self.cycle:
-            self.runningAdditions.append(self.instructions[0].value)
             self.registerValue += self.instructions[0].value
             self.instructions.pop(0)
 
