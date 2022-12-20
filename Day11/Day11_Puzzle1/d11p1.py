@@ -33,7 +33,6 @@ class Monkey:
         else:
             self.itemsToToss.append(TossedItem(item, self.otherMonkeyIfFalse)) 
 
-
     def performOperation(self, item):
         newValue = 0
         amountValue = item if self.operationAmount == "old" else int(self.operationAmount)
@@ -128,7 +127,6 @@ class MonkeyBusiness:
         for index, monkey in enumerate(self.monkeys):
             print("Monkey " + str(index))
             monkey.printMonkey()
-    
 
 def main():
     monkeyBusiness = MonkeyBusiness(20)
