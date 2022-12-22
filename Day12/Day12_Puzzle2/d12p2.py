@@ -116,7 +116,6 @@ class HillClimbingAlgorithm:
             for node in row:
                 node.path = ''
 
-
 def main():
     algo = HillClimbingAlgorithm()
     algo.parseInputFile()
