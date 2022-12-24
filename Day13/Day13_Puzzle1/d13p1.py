@@ -78,7 +78,6 @@ class PacketComparer:
                 continue
             charStr = ""
             for index, char in enumerate(line):
-                print("Current char is" + char)
                 if char == "[":
                     if index == 0:
                         if readingFirstPacket:
@@ -105,7 +104,6 @@ class PacketComparer:
                             currentPacket.parent.data.append(currentPacket.data)
                             currentPacket = currentPacket.parent
                 elif char == ",":
-                    print("charStr is " + charStr)
                     if len(charStr) > 0:
                         currentPacket.data.append(int(charStr))
                     charStr = ""
@@ -129,7 +127,6 @@ class PacketComparer:
 def main():
  solver = PacketComparer()
  solver.parseInputFile()
- print(solver.pairs[0][0].data)
  solver.compareAllPairs()
 
 if __name__ == "__main__":
