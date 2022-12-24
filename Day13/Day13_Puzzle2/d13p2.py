@@ -118,6 +118,7 @@ class PacketComparer:
                product *= (index + 1)
 
         print("The decoder key is " + str(product))
+
 def main():
  solver = PacketComparer()
  solver.solve()
