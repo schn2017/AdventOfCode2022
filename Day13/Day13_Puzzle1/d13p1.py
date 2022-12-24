@@ -3,80 +3,134 @@ import sys
 class Packet:
     def __init__(self, parent = None):
         self.parent = parent
-        self.contents = []
+        self.data = []
 
-    def printContents(self):
-        for content in self.contents:
-            if isinstance(content, Packet):
-                print("child packet found")
-                content.printContents()
-            else:
-                print(content)
+class PacketComparer:
+    def __init__(self):
+        self.pairs = []
+
+    def compare(self, data, otherData, level):
+        print('\t' * (level) + "Comparing " + str(data) + " vs " + str(otherData))
+        for index in range(0, len(data)):
+            # Index not available in other pair
+            if index >= len(otherData):
+                # If the right list runs out of items first, the inputs are not in the right order
+                if len(data) > len(otherData) and type(data) == list and type(otherData) == list:
+                    print('\t' * (level) + "-Right side ran out of items, so inputs are not in the right order")
+                    return 0
+
+            if type(data[index]) == int and type(otherData[index]) == int:
+                print('\t' * (level) + " -Compare " + str(data[index]) + " vs " + str(otherData[index]))
+                if (data[index] > otherData[index]):
+                    print('\t' * (level + 1 ) + "-Right side is smaller, so inputs are not in the right order")
+                    return 0
+                elif data[index] < otherData[index]:
+                    print('\t' * (level + 1) + "-Left side is smaller, so inputs are in the right order")
+                    return 1
+                else:
+                    continue
+            elif type(data[index]) == list and type(otherData[index]) == list:
+                result = self.compare(data[index], otherData[index], level + 1)
+                if result != -1:
+                    return result
+            elif (type(data[index]) == int and type(otherData[index]) == list):
+                print('\t' * (level + 1)  + "Mixed types: convert left to [" + str(data[index]) + "] and retry comparison")
+                result = self.compare([data[index]], otherData[index], level + 1)
+                if result != -1:
+                    return result
+            elif (type(data[index]) == list and type(otherData[index]) == int):
+                print('\t' * (level + 1) + "Mixed types: convert right to [" + str(otherData[index]) + "] and retry comparison")
+                result = self.compare(data[index], [otherData[index]], level + 1)
+                if result != -1:
+                    return result
+        
+        #If the left list runs out of items first, the inputs are in the right order
+        if len(data) < len(otherData) and type(data) == list and type(otherData) == list:
+            print('\t' * (level) + "-Left side ran out of items, so inputs are in the right order")
+            return 1
+        return -1
+
+    def compareAllPairs(self):
+        sum = 0
+        for index, pair in enumerate(self.pairs):
+            print("Pairs "  +str(index + 1))
+            result = self.compare(pair[0].data, pair[1].data, 0)
+            if result == 1:
+                print("Pair " + str(index + 1) + " is in order")
+                sum += index + 1
+            elif result == -1:
+                print("Pair " + str(index + 1) + "returned -1")
+                sum += index + 1
+
+            elif result == 0:
+                print("Pair " + str(index + 1) + " is not in order")
+
+        print("The sum is " + str(sum))
+
+    def parseInputFile(self):
+        inputFile = open(sys.argv[1], "r")
+        packet1 = Packet()
+        packet2 = Packet()
+        currentPacket = Packet()
+        readingFirstPacket = True
+        for line in inputFile:
+            if len(line.strip()) == 0:
+                continue
+            charStr = ""
+            for index, char in enumerate(line):
+                print("Current char is" + char)
+                if char == "[":
+                    if index == 0:
+                        if readingFirstPacket:
+                            currentPacket = packet1
+                        else:
+                            currentPacket = packet2
+                    else:
+                        currentPacket = Packet(currentPacket)
+                elif char == "]":
+                    if len(charStr) > 0:
+                        currentPacket.data.append(int(charStr))
+                    charStr = ""
+
+                    if readingFirstPacket:
+                        if packet1 == currentPacket:
+                            packet1.data = currentPacket.data
+                        else:
+                            currentPacket.parent.data.append(currentPacket.data)
+                            currentPacket = currentPacket.parent
+                    else:
+                        if packet2 == currentPacket:
+                            packet2.data = currentPacket.data
+                        else:
+                            currentPacket.parent.data.append(currentPacket.data)
+                            currentPacket = currentPacket.parent
+                elif char == ",":
+                    print("charStr is " + charStr)
+                    if len(charStr) > 0:
+                        currentPacket.data.append(int(charStr))
+                    charStr = ""
+                elif char.isdigit():
+                    charStr += char
+
+                if char == '\n':
+                    # Switch over to reading second Packet in pair
+                    if readingFirstPacket:
+                        readingFirstPacket = False
+                    else:
+                        #reset everything for next pair parsing
+                        readingFirstPacket = True
+                        self.pairs.append([packet1, packet2])
+
+                        packet1 = Packet()
+                        packet2 = Packet()
+        #Append last pair found
+        self.pairs.append([packet1, packet2])
 
 def main():
-    inputFile = open(sys.argv[1], "r")
-    pairs = []
-    packet1 = Packet()
-    packet2 = Packet()
-    currentPacket = Packet()
-    readingFirstPair = True
-    nesting = 0
-    for line in inputFile:
-        if len(line.strip()) == 0:
-            readingFirstPair = True
-            nesting = 0
-            pairs.append([packet1, packet2])
-
-            packet1 = Packet()
-            packet2 = Packet()
-            continue
-
-        for index, char in enumerate(line):
-            if char == "[":
-                if index == 0:
-                    if readingFirstPair:
-                        currentPacket = packet1
-                    else:
-                        currentPacket = packet2
-                else:
-                    nesting += 1
-                    currentPacket = Packet(currentPacket)
-            elif char == "]":
-                if readingFirstPair:
-                    if nesting == 0:
-                        packet1.contents = currentPacket.contents
-                    else:
-                        currentPacket.parent.contents.append(currentPacket.contents)
-                        currentPacket = currentPacket.parent
-                        nesting -=1
-
-                else:
-                    if nesting == 0:
-                        packet2.contents = currentPacket.contents
-                    else:
-                        currentPacket.parent.contents.append(currentPacket.contents)
-                        currentPacket = currentPacket.parent
-                        nesting -=1
-            elif char == ",":
-                pass
-            elif char.isdigit():
-                currentPacket.contents.append(int(char))
-
-            if char == '\n':
-                readingFirstPair = False
-                nesting = 0
-
-    for pair in pairs:
-        print("part 1")
-        print(pair[0].contents)
-        print('Length is ' + str(len(pair[0].contents)))
-        print("part 2")
-        print(pair[1].contents)
-        print('Length is ' + str(len(pair[1].contents)))
-        print("")
-
-
-    inputFile.close()
+ solver = PacketComparer()
+ solver.parseInputFile()
+ print(solver.pairs[0][0].data)
+ solver.compareAllPairs()
 
 if __name__ == "__main__":
     main()
