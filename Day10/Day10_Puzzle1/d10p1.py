@@ -9,7 +9,7 @@ class Instruction:
         self.value = value
         self.operation = operation
         self.completionCycle = startCycle + 1 if operation == "addx" else startCycle
-        pass
+
 
 class CPU:
     def __init__(self):
@@ -18,7 +18,6 @@ class CPU:
         self.instructions = []
         self.signalStrengthChecks = [20, 60, 100, 140, 180, 220]
         self.signalStrengthSum = 0
-        pass
 
     def readInInstructions(self):
         inputFile = open(sys.argv[1], "r")
