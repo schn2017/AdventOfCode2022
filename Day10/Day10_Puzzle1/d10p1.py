@@ -10,7 +10,6 @@ class Instruction:
         self.operation = operation
         self.completionCycle = startCycle + 1 if operation == "addx" else startCycle
 
-
 class CPU:
     def __init__(self):
         self.registerValue = 1
@@ -32,7 +31,6 @@ class CPU:
             elif instruction[0] == "noop":
                 newInstruction = Instruction(0, instruction[0], startingCycle)
                 self.instructions.append(newInstruction)
-
 
     def process(self):
         while len(self.instructions) > 0:
