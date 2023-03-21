@@ -9,7 +9,6 @@ class Instruction:
         self.value = value
         self.operation = operation
         self.completionCycle = startCycle + 1 if operation == "addx" else startCycle
-        pass
 
 class Device:
     def __init__(self):
@@ -20,7 +19,6 @@ class Device:
         self.signalStrengthSum = 0
         self.crt = [[],[],[],[],[],[]]
         self.currentRow = 0
-        pass
 
     def readInInstructions(self):
         inputFile = open(sys.argv[1], "r")
